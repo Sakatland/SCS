@@ -14,7 +14,7 @@ Get your Token for the API on https://developer.clashofclans.com
 
 
 # Usage
-Due to the limitation of CoC API, some functions only works when a CWL is taking place and before a new clanwar is launched after the end of a season. But you can still download the data for a previous CWL season with its wartags (each seasons has 28 wartags).
+Due to the limitation of CoC API, some functions only works when a CWL is taking place and before a new clanwar is launched (after the end of a CWL season). But you can still download the data for a previous CWL season with its wartags (each seasons has 28 wartags).
 
 If you want to download the data of a previous season you need to prepare "Warlogs.txt" with the following synthax:
 
