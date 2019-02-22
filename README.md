@@ -4,6 +4,9 @@ Python Script to download the data of a clan as well as its members stats (stars
 Last update: 2019-02-21
 Current Version: 0.4
 
+Official thread on the forum of Clash of Clans:
+https://forum.supercell.com/showthread.php/1799550-Sakat-s-CoC-Script-Download-your-clan-data-and-CWL-stats?p=12105367
+
 
 # Note
 This script is based on ClashOfClansAPI (1.0.4) by Tony Benoy. For more info, please check his github on https://github.com/tonybenoy/cocapi. If you don't have it already please install it with:
