@@ -97,6 +97,10 @@ while str(clan_data_1) == "404":
 print("\n")
 
 # The following variables are used to store some data of the clan that can be used in the script
+# It also checks that the API is not in maintenance
+if clan_data_1["reason"] == "inMaintenance":
+    print(clan_data_1["message"])
+    quit()
 clan_name = clan_data_1["name"]
 
 # Get the clan and members data from the API and saves it in the txt file
