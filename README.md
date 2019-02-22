@@ -8,7 +8,7 @@ Current Version: 0.4
 # Note
 This script is based on ClashOfClansAPI (1.0.4) by Tony Benoy. For more info, please check his github on https://github.com/tonybenoy/cocapi. If you don't have it already please install it with:
 
-	pip install cocapi
+	pip3 install cocapi
 
 Get your Token for the API on https://developer.clashofclans.com
 
