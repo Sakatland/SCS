@@ -421,4 +421,3 @@ print("\n")
 print("Sakat's CoC Script " + script_version + " - Clan Valais (#9PJYL)")
 print("     Discover another project by us on:")
 print("     =======>  www.cgleech.tk <=======")
-.
