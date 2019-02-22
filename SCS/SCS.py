@@ -4,7 +4,7 @@
 
 This script is based on ClashOfClansAPI (1.0.4) by Tony Benoy. For more info, please check his github on
                         github.com/tonybenoy/cocapi/
-If you don't have it already please install it with "pip install cocapi"
+If you don't have it already please install it with "pip3 install cocapi"
 
 Some errors that can happen with the API:
 - Error 404: Probably a wrong request URL or an invalid clan tag/location ID/league ID, sometimes it happens if your requests are too fast
