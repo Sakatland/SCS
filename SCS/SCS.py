@@ -1,5 +1,5 @@
 """
-                         Sakat's CoC Script v0.4
+                         Sakat's CoC Script v0.6
                          -----------------------
 
 This script is based on ClashOfClansAPI (1.0.4) by Tony Benoy. For more info, please check his github on
@@ -15,39 +15,50 @@ Some errors that can happen with the API:
 """
 
 
-import os, datetime, ast
+import os, datetime, ast, os.path
 from time import sleep
 from cocapi import CocApi
 
 # Current version of the Sakat's CoC Script
-script_version = "v0.4"
+script_version = "v0.6"
 
-# Default token and the authorized IPs (the second one is optional)
-# If you don't have your token please create one on developer.clashofclans.com
+# Clean terminal
 os.system("cls")
-token="please_replace_this_with_your_own_token_for_the_API_of_Clash_of_Clans"
-token_ip = ["0.0.0.0"]
+
+# Ask to confirm that Token.txt is ready
+# If you don't have your token for the API, please create one on developer.clashofclans.com
+print("Welcome in Sakat's Coc Script " + script_version + "!\n")
+print("For the script to work, you need to enter your Token for the API in a file called 'Token.txt',",)
+print("(Token.txt must be located in the same folder as SCS.exe)")
+print("Remark: Get your Token on developer.clashofclans.com")
+ready_check = input("When Token.txt is ready, press Enter to proceed..\n")
+
+# Check that Token.txt exists in the folder.
+while os.path.exists("Token.txt") == False:
+    print("Error: Token.txt hasn't been found.")
+    print("Please save your Token in a txt file called 'Token.txt' (in the same folder as the script).")
+    ready_check = input("When the file is ready, press Enter to proceed..\n")
+    os.path.exists("Token.txt")
+
+# Get the API Token and verify Token.txt isn't empty
+token = ""
+while token == "":
+    file_token = open("Token.txt","r", encoding="utf-8")
+    token = file_token.read().strip()
+    file_token.close()
+    if token == "":
+        print("Error: Token.txt is empty.")
+        print("Please enter your Token for the API in it.")
+        ready_check = input("When the file is ready, press Enter to proceed..\n")
 
 # Clear the current screen
 print("\n"*100)
 
-# Ask if another token is required
-print("The IPs used for the current token are:")
-for item in token_ip:
-    print(item)
-check_token = input("Do you want to enter a new token ? (y/n) \n")
-if (check_token.lower() == "y"):
-    token = input("Please enter your new token: ")
-else:
-    print("Default token will be used")
-print("\n")
-
-# Set timeout value for the API (default=1)
-timeout = int(input("Enter the timeout (default=1): ") or "1")
-print("\n")
+# Set a default timeout value for the API (default=10)
+timeout = 10
 api=CocApi(token,timeout)
 
-# Set the clantag for which the script checks the information from the API
+# Set the clantag for which the script and check the information from the API
 clantag = ("#9PJYL")
 print("Default clantag is " + clantag)
 check_clantag = input("Do you want to enter another clantag? (y/n) \n")
@@ -76,7 +87,7 @@ print("\n"*100)
 proceed_clan = input("(1/6) Do you want to download the clan and its members data? (y/n) \n")
 proceed_warlog = input("(2/6) Do you want to download the warlog of the clan? (y/n) \n")
 proceed_currentwar = input("(3/6) Do you want to download the data about current war ? (y/n) \n")
-proceed_cwl = input("(4/6) Do you want to download the data about current CWL group? (y/n) \n")
+proceed_cwl = input("(4/6) ** Only during a CWL season ** Do you want to download the data about current CWL group? (y/n) \n")
 proceed_cwl_details = input("(5/6) Do you want to download the details of individual CWL wars? (y/n) \n")
 proceed_cwl_unique = input("(6/6) Do you want to download the details of one single CWL war? (y/n) \n")
 
@@ -98,10 +109,17 @@ print("\n")
 
 # The following variables are used to store some data of the clan that can be used in the script
 # It also checks that the API is not in maintenance
-if clan_data_1["reason"] == "inMaintenance":
-    print(clan_data_1["message"])
-    quit()
-clan_name = clan_data_1["name"]
+if "reason" in clan_data_1:
+    if clan_data_1["reason"] == "inMaintenance":
+        print(clan_data_1["message"])
+        ready_check = input("Please try again later...")
+        quit()
+    if clan_data_1["reason"] == "accessDenied.invalidIp":
+        print(clan_data_1["message"])
+        ready_check = input("Please verify that the IP linked to your API key is correct and restart SCS.exe")
+        quit()
+else:
+    clan_name = clan_data_1["name"]
 
 # Get the clan and members data from the API and saves it in the txt file
 if (proceed_clan.lower() == "y"):
@@ -164,7 +182,6 @@ clan_data_4 = 0
 if (proceed_cwl.lower() == "y"):
     print("Downloading the data about current CWL group (4/6)...")
     sleep(timer_1)
-    file_4 = open(current_time + " - 04 - CWL Groups ["+ clantag + "].txt","w", encoding="utf-8")
     clan_data_4 = api.clan_leaguegroup(str(clantag))
     attempt_nb = 2
     while str(clan_data_4) == "404":
@@ -176,22 +193,30 @@ if (proceed_cwl.lower() == "y"):
         if (attempt_nb == attempt_nb_limit):
             print("Still getting error 404 after " + str(attempt_nb-1) + " attempts, try again later.")
             break
-    file_4.write(str(clan_data_4))
-    file_4.close()
+    if clan_data_4["reason"] == "notFound":
+        print("\nError: " + clan_name + " is currently not in a CWL season.")
+        print("These data are only available when " + clan_name + " is currently taking part to a CWL season.")
+        print("Notice that after the end of a season these data stay available until the search for a new clanwar is launched.")
+        print("Once a new war is launched after a CWL season it is gone.\n")
+        ready_check = input("Press Enter to continue...\n")
+    else:
+        file_4 = open(current_time + " - 04 - CWL Groups ["+ clantag + "].txt","w", encoding="utf-8")
+        file_4.write(str(clan_data_4))
+        file_4.close()
 else:
     print("The download of the data about current CWL group has been skipped.")
 
 # Get the individual data for each of the 28 CWL wars
 # This function only works when a CWL is running or with a Wartags.txt with the 28 war tags already written in it
 # Also the data are only available once the preparation phase has started
-# Please note that this part of the script will generate two versions of the file. The first one is more "human friendly"
-# While the second file is in the format of a dictionary (for advanced uses in future updates)
+# Please note that this part of the script will generate four files. The last one is "human friendly"
+# while the others are in the format of a dictionary (for advanced uses)
 if (proceed_cwl_details.lower() == "y"):
 
     # Automatically write the wartags of the current CWL to Wartags.txt (only works during a CWL season)
     # The script will only write the wartags that are already available (not equal to "#000000000")
     # If no CWL season is taking place, the script will skip this step but the user will need to prepare Wartags.txt manually
-    if clan_data_4 != 0:
+    if clan_data_4 != 0 and clan_data_4["reason"] != "notFound":
         file_war = open("Wartags.txt","w", encoding="utf-8")
         war_round_count = 0
         while (war_round_count < 7):
@@ -207,8 +232,26 @@ if (proceed_cwl_details.lower() == "y"):
         file_war.close()
     else:
         print("For next step the CWL war tags must be in a text file called Wartags.txt,",)
-        print("please proceed after preparing Wartags.txt (as you skipped step #4)")
-        ready_check = input("When Wartags.txt is available, press Enter to proceed..")
+        ready_check = input("When Wartags.txt is available, press Enter to proceed..\n")
+
+    # Check that Wartags.txt exists in the folder.
+    while os.path.exists("Wartags.txt") == False:
+        print("Error: warTags.txt hasn't been found.")
+        print("Please save the tags of the CWL wars in a txt file called 'Wartags.txt' (in the same folder as the script).")
+        ready_check = input("When the file is ready, press Enter to proceed..\n")
+        os.path.exists("Wartags.txt")
+
+    # Verify Wartags.txt isn't empty
+    # content_5 needs to be declared here to avoid conflict in the loop.
+    content_5 = ""
+    while content_5 == "":
+        file_war = open("Wartags.txt","r", encoding="utf-8")
+        content_5 = file_war.read().strip()
+        file_war.close()
+        if content_5 == "":
+            print("Error: Wartags.txt is empty.")
+            print("Please enter the tags of the CWL wars in it.")
+            ready_check = input("When the file is ready, press Enter to proceed..\n")
 
     # Get the wartags
     file_5 = open("Wartags.txt","r", encoding="utf-8")
@@ -398,7 +441,7 @@ if (proceed_cwl_unique.lower() == "y"):
     file_10.close()
     print(("\n \n"))
 else:
-    print("No download of the details of one single CWL war asked, step skipped.")
+    print("The download of the details of one single CWL war has been skipped.")
 
 # Confirmation message
 print("\n")
@@ -406,22 +449,23 @@ print("Download finished (100%)")
 print("Raw data successfully written in:")
 if (proceed_clan.lower() == "y"):
     print(current_time + " - 01 - Clan Info ["+ clantag + "].txt")
-elif (proceed_warlog.lower() == "y"):
+if (proceed_warlog.lower() == "y"):
     print(current_time + " - 02 - Warlog ["+ clantag + "].txt")
-elif (proceed_currentwar.lower() == "y"):
+if (proceed_currentwar.lower() == "y"):
     print(current_time + " - 03 - Current War ["+ clantag + "].txt")
-elif (proceed_cwl.lower() == "y"):
-    print(current_time + " - 04 - CWL Groups ["+ clantag + "].txt")
-elif (proceed_cwl_details.lower() == "y"):
+if os.path.exists(current_time + " - 04 - CWL Groups ["+ clantag + "].txt") == True:
+        print(current_time + " - 04 - CWL Groups ["+ clantag + "].txt")
+if (proceed_cwl_details.lower() == "y"):
     print(current_time + " - 05 - CWL Wars ["+ clantag + "].txt")
     print(current_time + " - 06 - CWL Wars Dict ["+ clantag + "].txt")
     print(current_time + " - 07 - CWL Members Stats Dict ["+ clantag + "].txt")
     print(current_time + " - 08 - CWL Members Stats ["+ clantag + "].txt")
-elif (proceed_cwl_unique.lower() == "y"):
+if (proceed_cwl_unique.lower() == "y"):
     print(current_time + " - 09 - Individual CWL War ["+ clantag + "].txt")
-else:
-    print("No file has been written as you skipped every options ;)")
+if (proceed_clan.lower() != "y") and (proceed_warlog.lower() != "y") and (proceed_currentwar.lower() != "y") and  (os.path.exists(current_time + " - 04 - CWL Groups ["+ clantag + "].txt") != True) and (proceed_cwl_details.lower() != "y") and (proceed_cwl_unique.lower() != "y"):
+    print("No file has been written.")
 print("\n")
 print("Sakat's CoC Script " + script_version + " - Clan Valais (#9PJYL)")
 print("     Discover another project by us on:")
-print("     =======>  www.cgleech.tk <=======")
+print("     =======>  www.cgleech.tk <=======\n")
+finish = input("Press Enter to quit.\n")
