@@ -1,8 +1,8 @@
 # Sakat's CoC Script
 Python Script to download the data of a clan as well as its members stats (stars and percent done/taken) during a Clan War League (CWL) season in Clash of Clans.
 
-Last update: 2019-02-21
-Current Version: 0.4
+Last update: 2019-02-25
+Current Version: 0.6
 
 Official thread on the forum of Clash of Clans:
 https://forum.supercell.com/showthread.php/1799550-Sakat-s-CoC-Script-Download-your-clan-data-and-CWL-stats?p=12105367
@@ -17,6 +17,8 @@ Get your Token for the API on https://developer.clashofclans.com
 
 
 # Usage
+Enter your Token for the API in Token.txt and run the script.
+
 Due to the limitation of CoC API, some functions only works when a CWL is taking place and before a new clanwar is launched (after the end of a CWL season). But you can still download the data for a previous CWL season with its wartags (each seasons has 28 wartags).
 
 If you want to download the data of a previous season you need to prepare "Warlogs.txt" with the following synthax:
