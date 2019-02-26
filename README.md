@@ -7,6 +7,9 @@ Current Version: 0.6
 Official thread on the forum of Clash of Clans:
 https://forum.supercell.com/showthread.php/1799550-Sakat-s-CoC-Script-Download-your-clan-data-and-CWL-stats?p=12105367
 
+Use this script with our CWL Planning Sheet:
+https://forum.supercell.com/showthread.php/1770241-CWL-Planning-Sheet-to-manage-members-in-CWL
+
 
 # Note
 This script is based on ClashOfClansAPI (1.0.4) by Tony Benoy. For more info, please check his github on https://github.com/tonybenoy/cocapi. If you don't have it already please install it with:
@@ -28,3 +31,8 @@ If you want to download the data of a previous season you need to prepare "Warlo
 	...
 	#29QR928CP
 	#29QR90GVG
+
+
+# Final word
+Check CGLeech.tk, another of our project!
+https://forum.supercell.com/showthread.php/1737664-CGLeech-New-website-to-manage-Clan-Games-activity%21
