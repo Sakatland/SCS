@@ -1,9 +1,7 @@
 # Sakat's CoC Script
 Python Script to download the data of a clan as well as its members stats (stars and percent done/taken) during a Clan War League (CWL) season in Clash of Clans.
 
-Last update: 2019-02-25
-
-Current Version: 0.6
+Current Version: 0.6 (last update: 2019-02-25)
 
 Official thread on the forum of Clash of Clans:
 https://forum.supercell.com/showthread.php/1799550-Sakat-s-CoC-Script-Download-your-clan-data-and-CWL-stats?p=12105367
