@@ -35,4 +35,5 @@ If you want to download the data of a previous season you need to prepare "Warlo
 
 # Final word
 Check CGLeech.tk, another of our project!
+
 https://forum.supercell.com/showthread.php/1737664-CGLeech-New-website-to-manage-Clan-Games-activity%21
