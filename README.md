@@ -2,6 +2,7 @@
 Python Script to download the data of a clan as well as its members stats (stars and percent done/taken) during a Clan War League (CWL) season in Clash of Clans.
 
 Last update: 2019-02-25
+
 Current Version: 0.6
 
 Official thread on the forum of Clash of Clans:
