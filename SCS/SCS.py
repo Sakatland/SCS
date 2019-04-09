@@ -20,7 +20,7 @@ from time import sleep
 from cocapi import CocApi
 
 # Current version of the Sakat's CoC Script
-script_version = "v0.7"
+script_version = "v0.8"
 
 # Clean terminal
 os.system("cls")
@@ -63,7 +63,7 @@ clantag = ("#9PJYL")
 print("Default clantag is " + clantag)
 check_clantag = input("Do you want to enter another clantag? (y/n) \n")
 if (check_clantag.lower() == "y"):
-    clantag = input("Enter your clantag (for ex. #9PJYL): ")
+    clantag = input("Enter your clantag (for ex. #9PJYL): ").upper()
     print("The script will check the data for " + clantag)
 else:
     print("The script will check the data for " + clantag)
@@ -539,7 +539,7 @@ if (proceed_cwl_details.lower() == "y"):
             if member_status == 7:
                 dict_members.append("{'Member': '" + member_name + "', 'stars_att': " + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["attacks"][0]["stars"]) + ", 'percent_att': '" + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["attacks"][0]["destructionPercentage"]) + "%', 'stars_def': " + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["bestOpponentAttack"]["stars"]) + ", 'percent_def': '" + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["bestOpponentAttack"]["destructionPercentage"]) + "%'}")
             elif member_status == 6:
-                if data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["opponentAttacks"] == 1:
+                if data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["opponentAttacks"] >= 1:
                     dict_members.append("{'Member': '" + member_name + "', 'stars_att': '/', 'percent_att': '/', 'stars_def': " + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["bestOpponentAttack"]["stars"]) + ", 'percent_def': '" + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["bestOpponentAttack"]["destructionPercentage"]) + "%'}")
                 else:
                     dict_members.append("{'Member': '" + member_name + "', 'stars_att': " + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["attacks"][0]["stars"]) + ", 'percent_att': '" + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["attacks"][0]["destructionPercentage"]) + "%', 'stars_def': '/', 'percent_def': '/'}")
@@ -602,14 +602,6 @@ if (proceed_cwl_details.lower() == "y"):
         member_nb += 1
     file_9.close()
 
-    # Get ride of "_USED_TO_AVOID_NICKNAME_ERROR_" (used to avoid conflict in the JSON synthax)
-    file_9 = open(current_time + " - 08 - CWL Members Stats ["+ clantag + "].txt","r", encoding="utf-8")
-    file_9_cleaner = file_9.read()
-    file_9.close()
-    file_9 = open(current_time + " - 08 - CWL Members Stats ["+ clantag + "].txt","w", encoding="utf-8")
-    file_9.write(file_9_cleaner.replace("_USED_TO_AVOID_NICKNAME_ERROR_", "'"))
-    file_9.close()
-
     # Sort the lines by alphabetic order (based on members name)
     file_9 = open(current_time + " - 08 - CWL Members Stats ["+ clantag + "].txt","r", encoding="utf-8")
     file_8_order_final = file_9.readlines()
@@ -625,7 +617,7 @@ if (proceed_cwl_details.lower() == "y"):
     file_9.write("\n".join(your_war_tags) + "\n\n\n")
     file_9.write("Individual stats of the participating members through the available CWL wars:\n")
     for item in file_8_order_final:
-        file_9.write(item)
+        file_9.write(item.replace("_USED_TO_AVOID_NICKNAME_ERROR_", "'"))
     file_9.close()
     print(("\n \n"))
 else:
