@@ -1,5 +1,5 @@
 """
-                         Sakat's CoC Script v0.6
+                         Sakat's CoC Script v0.8
                          -----------------------
 
 This script is based on ClashOfClansAPI (1.0.4) by Tony Benoy. For more info, please check his github on
@@ -20,14 +20,14 @@ from time import sleep
 from cocapi import CocApi
 
 # Current version of the Sakat's CoC Script
-script_version = "v0.6"
+script_version = "v0.7"
 
 # Clean terminal
 os.system("cls")
 
 # Ask to confirm that Token.txt is ready
 # If you don't have your token for the API, please create one on developer.clashofclans.com
-print("Welcome in Sakat's Coc Script " + script_version + "!\n")
+print("Welcome to Sakat's Coc Script " + script_version + "!\n")
 print("For the script to work, you need to enter your Token for the API in a file called 'Token.txt',",)
 print("(Token.txt must be located in the same folder as SCS.exe)")
 print("Remark: Get your Token on developer.clashofclans.com")
@@ -126,29 +126,156 @@ if (proceed_clan.lower() == "y"):
     print("Downloading the clan and its members data (1/6)...")
     sleep(timer_1)
     file_1 = open(current_time + " - 01 - Clan Info ["+ clantag + "].txt","w", encoding="utf-8")
+    file_1.write(str(clan_data_1["name"]) + " (" + str(clan_data_1["tag"]) + " - lvl " + str(clan_data_1["clanLevel"]) + ")\n\n")
+    file_1.write("----------------------------------------\n\n")
+    file_1.write('"' + str(clan_data_1["description"]) + '"\n\n')
+    file_1.write("----------------------------------------\n\n")
+    file_1.write("Location: " + str(clan_data_1["location"]["name"]) + "\n")
+    file_1.write("War frequency: " + str(clan_data_1["warFrequency"]) + "\n")
+    file_1.write("Required trophies: " + str(clan_data_1["requiredTrophies"]) + "\n")
+    file_1.write("Clan points: \n - Home Village = " + str(clan_data_1["clanPoints"]) + "\n - Builder Base = " + str(clan_data_1["clanVersusPoints"]) + "\n")
+    file_1.write("Wars won: " + str(clan_data_1["warWins"]) + "\n")
+    file_1.write("War ties: " + str(clan_data_1["warTies"]) + "\n")
+    file_1.write("Wars lost: " + str(clan_data_1["warLosses"]) + "\n")
+    file_1.write("Current war win-streak: " + str(clan_data_1["warWinStreak"]) + "\n\n")
+    file_1.write("----------------------------------------\n\n")
+    file_1_txt = "Members in details (by trophies order):\n\n"
+    member_count = 0
+    members_av_lvl = 0
+    members_av_troph_hv = 0
+    members_av_troph_bh = 0
+    members_av_troops_given = 0
+    members_av_troops_got = 0
+    while (member_count < clan_data_1["members"]):
+        # The following sum is used for clan stats average
+        members_av_lvl += clan_data_1["memberList"][member_count]["expLevel"]
+        members_av_troph_hv += clan_data_1["memberList"][member_count]["trophies"]
+        members_av_troph_bh += clan_data_1["memberList"][member_count]["versusTrophies"]
+        members_av_troops_given += clan_data_1["memberList"][member_count]["donations"]
+        members_av_troops_got += clan_data_1["memberList"][member_count]["donationsReceived"]
+        # The data is stored in file_1_txt first so it can be added in the .txt file after clan stats average
+        file_1_txt += str(member_count+1) + ") " + str(clan_data_1["memberList"][member_count]["name"]) + " (" + str(clan_data_1["memberList"][member_count]["tag"]) + " - lvl " + str(clan_data_1["memberList"][member_count]["expLevel"]) + ")\n"
+        file_1_txt += "Role in the clan: " + str(clan_data_1["memberList"][member_count]["role"]).replace("admin", "elder") + "\n"
+        file_1_txt += "Home village: " + str(clan_data_1["memberList"][member_count]["trophies"]) + " trophies (" + str(clan_data_1["memberList"][member_count]["league"]["name"]) + ")\n"
+        file_1_txt += "Builder base: " + str(clan_data_1["memberList"][member_count]["versusTrophies"]) + " trophies\n"
+        file_1_txt += "Donations:\n- " + str(clan_data_1["memberList"][member_count]["donations"]) + " troops donated\n- " +  str(clan_data_1["memberList"][member_count]["donationsReceived"])  + " troops received\n\n"
+        member_count += 1
+    file_1.write("Global stats (based on all members):\n")
+    file_1.write("Average level: " + str(round(members_av_lvl/clan_data_1["members"], 2)) + "\n")
+    file_1.write("Average trophies:\n- Home village = " + str(round(members_av_troph_hv/clan_data_1["members"], 2)) + "\n")
+    file_1.write("- Builder base = " + str(round(members_av_troph_bh/clan_data_1["members"], 2)) + "\n")
+    file_1.write("Average donation:\n- Troops donated = " + str(round(members_av_troops_given/clan_data_1["members"], 2)) + "\n")
+    file_1.write("- Troops received = " + str(round(members_av_troops_got/clan_data_1["members"], 2)) + "\n\n")
+    file_1.write("----------------------------------------\n\n")
+    file_1.write("The clan has " + str(clan_data_1["members"]) + " members:\n")
+    member_count = 0
+    members_list = []
+    while (member_count < clan_data_1["members"]):
+        members_list.append(clan_data_1["memberList"][member_count]["name"])
+        member_count += 1
+    members_list.sort(key=lambda x: x.lower())
+    for member in members_list:
+        file_1.write(member + "\n")
+    file_1.write("\n----------------------------------------\n\n")
+    file_1.write(file_1_txt)
+    file_1.write("----------------------------------------\n\n")
+    file_1.write("Raw data (as downloaded from the API):\n")
     file_1.write(str(clan_data_1))
     file_1.close()
 else:
     print("The download of the clan and its members data has been skipped.")
 
+
 # Get the warlog data from the API and saves it in the txt file
 if (proceed_warlog.lower() == "y"):
     print("Downloading the warlog of the clan (2/6)...")
     sleep(timer_1)
-    file_2 = open(current_time + " - 02 - Warlog ["+ clantag + "].txt","w", encoding="utf-8")
     clan_data_2 = api.clan_war_log(str(clantag))
-    attempt_nb = 2
-    while str(clan_data_2) == "404":
-        print("Error 404, trying again in " + str(timer_1) + " seconds...")
-        sleep(timer_1)
-        print("Attempt #" + str(attempt_nb))
-        clan_data_2 = api.clan_war_log(str(clantag))
-        attempt_nb += 1
-        if (attempt_nb == attempt_nb_limit):
-            print("Still getting error 404 after " + str(attempt_nb-1) + " attempts, try again later.")
-            break
-    file_2.write(str(clan_data_2))
-    file_2.close()
+    # Check that the warlog of the clan is public
+    if "reason" in clan_data_2:
+        print("Error: " + clan_data_2["reason"])
+        print("The warlog of " + clan_name + " is not public, change the clan settings and try again.")
+        ready_check = input("Press Enter to continue...\n")
+    else:
+        file_2 = open(current_time + " - 02 - Warlog ["+ clantag + "].txt","w", encoding="utf-8")
+        attempt_nb = 2
+        while str(clan_data_2) == "404":
+            print("Error 404, trying again in " + str(timer_1) + " seconds...")
+            sleep(timer_1)
+            print("Attempt #" + str(attempt_nb))
+            clan_data_2 = api.clan_war_log(str(clantag))
+            attempt_nb += 1
+            if (attempt_nb == attempt_nb_limit):
+                print("Still getting error 404 after " + str(attempt_nb-1) + " attempts, try again later.")
+                break
+        file_2.write(str(clan_data_1["name"]) + " (" + str(clan_data_1["tag"]) + " - lvl " + str(clan_data_1["clanLevel"]) + ")\n\n")
+        file_2.write("----------------------------------------\n\n")
+        file_2_txt = "Warlog in details:\n\n"
+        file_2_txt_2 = "Details of last CWL seasons:\n\n"
+        warlog_cw_victory = 0
+        warlog_av_size = 0
+        warlog_av_oppo_lvl = 0
+        warlog_av_stars_done = 0
+        warlog_av_per_done = 0
+        warlog_av_stars_taken = 0
+        warlog_av_per_taken = 0
+        warlog_av_xp = 0
+        warlog_cw_count = 0
+        warlog_war_nb = len(clan_data_2["items"])
+        # "warlog_war_nb_clean" is used to exclude CWL seasons (which is missing some key in the dictionary)
+        warlog_war_nb_clean = warlog_war_nb
+        # The following sum is used for clan stats average
+        while (warlog_cw_count < warlog_war_nb):
+            # The first "if" condition is used to exclude empty data from CWL seasons (parsed separately)
+            if (clan_data_2["items"][warlog_cw_count]["opponent"]["clanLevel"]) != 0:
+                if clan_data_2["items"][warlog_cw_count]["result"] == "win":
+                    warlog_cw_victory +=1
+                warlog_av_size += clan_data_2["items"][warlog_cw_count]["teamSize"]
+                warlog_av_oppo_lvl += clan_data_2["items"][warlog_cw_count]["opponent"]["clanLevel"]
+                warlog_av_stars_done += clan_data_2["items"][warlog_cw_count]["clan"]["stars"]/(clan_data_2["items"][warlog_cw_count]["teamSize"]*3)
+                warlog_av_per_done += clan_data_2["items"][warlog_cw_count]["clan"]["destructionPercentage"]
+                warlog_av_stars_taken += clan_data_2["items"][warlog_cw_count]["opponent"]["stars"]/(clan_data_2["items"][warlog_cw_count]["teamSize"]*3)
+                warlog_av_per_taken += clan_data_2["items"][warlog_cw_count]["opponent"]["destructionPercentage"]
+                warlog_av_xp += clan_data_2["items"][warlog_cw_count]["clan"]["expEarned"]
+                # The data is stored in file_2_txt first so it can be added in the .txt file after clanwars average
+                file_2_txt += "War #" + str(warlog_cw_count+1) + " (ended on " + str(clan_data_2["items"][warlog_cw_count]["endTime"][0:4]) + "-" + str(clan_data_2["items"][warlog_cw_count]["endTime"][4:6]) + "-" + str(clan_data_2["items"][warlog_cw_count]["endTime"][6:8]) + ")\n"
+                file_2_txt += str(clan_data_2["items"][warlog_cw_count]["clan"]["name"]) + " was lvl " + str(clan_data_2["items"][warlog_cw_count]["clan"]["clanLevel"]) + " (during that war)\n"
+                file_2_txt += "Opponent clan: " + str(clan_data_2["items"][warlog_cw_count]["opponent"]["name"]) + " (" + str(clan_data_2["items"][warlog_cw_count]["opponent"]["tag"]) + " - lvl " + str(clan_data_2["items"][warlog_cw_count]["opponent"]["clanLevel"]) + ")\n"
+                file_2_txt += "War size: " + str(clan_data_2["items"][warlog_cw_count]["teamSize"]) + "\n"
+                file_2_txt += "War result: " + str(clan_data_2["items"][warlog_cw_count]["result"]) + "\n"
+                file_2_txt += "Stars for: " + str(clan_data_2["items"][warlog_cw_count]["clan"]["stars"]) + "/" + str(clan_data_2["items"][warlog_cw_count]["teamSize"]*3) + " with " + str(round(clan_data_2["items"][warlog_cw_count]["clan"]["destructionPercentage"],2)) + "% (done in " + str(clan_data_2["items"][warlog_cw_count]["clan"]["attacks"]) + "/" + str(clan_data_2["items"][warlog_cw_count]["teamSize"]*2) + " attacks)\n"
+                file_2_txt += "Stars against: " + str(clan_data_2["items"][warlog_cw_count]["opponent"]["stars"]) + "/" + str(clan_data_2["items"][warlog_cw_count]["teamSize"]*3) + " with " + str(round(clan_data_2["items"][warlog_cw_count]["opponent"]["destructionPercentage"],2)) + "%\n"
+                file_2_txt += "XP gained: " + str(clan_data_2["items"][warlog_cw_count]["clan"]["expEarned"]) + "\n\n"
+            else:
+                file_2_txt_2 += "War season that ended on " + str(clan_data_2["items"][warlog_cw_count]["endTime"][0:4]) + "-" + str(clan_data_2["items"][warlog_cw_count]["endTime"][4:6]) + "-" + str(clan_data_2["items"][warlog_cw_count]["endTime"][6:8]) + "\n"
+                file_2_txt_2 += str(clan_data_2["items"][warlog_cw_count]["clan"]["name"]) + " was lvl " + str(clan_data_2["items"][warlog_cw_count]["clan"]["clanLevel"]) + " (during that season)\n"
+                # Used to make the value more clear and avoid "None/null" conflit
+                if clan_data_2["items"][warlog_cw_count]["result"] == "win":
+                    CWL_season_result = "Clan was promoted!"
+                elif clan_data_2["items"][warlog_cw_count]["result"] == "tie":
+                    CWL_season_result = "Clan was demoted..."
+                else:
+                    CWL_season_result = "Clan stayed in the same league"
+                file_2_txt_2 += "Season result: " + CWL_season_result + "\n"
+                file_2_txt_2 += "Stars for: " + str(clan_data_2["items"][warlog_cw_count]["clan"]["stars"]) + "/315 with " + str(round(clan_data_2["items"][warlog_cw_count]["clan"]["destructionPercentage"]*15,0)) + " destruction (done in " + str(clan_data_2["items"][warlog_cw_count]["clan"]["attacks"]) + "/105 attacks)\n"
+                file_2_txt_2 += "Stars against: " + str(clan_data_2["items"][warlog_cw_count]["opponent"]["stars"]) + "/315\n\n"
+                warlog_war_nb_clean += -1
+            warlog_cw_count += 1
+        file_2.write("Stats based on the " + str(warlog_war_nb_clean) +" last clanwars:\n")
+        file_2.write("Victory: " + str(warlog_cw_victory) + "/" + str(warlog_war_nb_clean) + " (" + str(round(warlog_cw_victory/warlog_war_nb_clean*100, 2)) + "% of victory)\n")
+        file_2.write("Average war size: " + str(round(warlog_av_size/warlog_war_nb_clean, 2)) + "\n")
+        file_2.write("Average opponent lvl: " + str(round(warlog_av_oppo_lvl/warlog_war_nb_clean, 2)) + "\n")
+        file_2.write("Average Stars for: " + str(round(warlog_av_stars_done/warlog_war_nb_clean*100, 2)) + "% (with " + str(round(warlog_av_per_done/warlog_war_nb_clean, 2)) + "% of destruction)\n")
+        file_2.write("Average Stars against: " + str(round(warlog_av_stars_taken/warlog_war_nb_clean*100, 2)) + "% (with " + str(round(warlog_av_per_taken/warlog_war_nb_clean, 2)) + "% of destruction)\n")
+        file_2.write("Average XP won: " + str(round(warlog_av_xp/warlog_war_nb_clean, 2)) + "\n\n")
+        file_2.write("----------------------------------------\n\n")
+        file_2.write(file_2_txt)
+        file_2.write("----------------------------------------\n\n")
+        file_2.write(file_2_txt_2)
+        file_2.write("----------------------------------------\n\n")
+        file_2.write("Raw data (as downloaded from the API):\n")
+        file_2.write(str(clan_data_2))
+        file_2.close()
 else:
     print("The download of the warlog of the clan has been skipped.")
 
@@ -156,20 +283,96 @@ else:
 if (proceed_currentwar.lower() == "y"):
     print("Downloading the data about current war (3/6)...")
     sleep(timer_1)
-    file_3 = open(current_time + " - 03 - Current War ["+ clantag + "].txt","w", encoding="utf-8")
     clan_data_3 = api.clan_current_war(str(clantag))
-    attempt_nb = 2
-    while str(clan_data_3) == "404":
-        print("Error 404, trying again in " + str(timer_1) + " seconds...")
-        sleep(timer_1)
-        print("Attempt #" + str(attempt_nb))
-        clan_data_3 = api.clan_current_war(str(clantag))
-        attempt_nb += 1
-        if (attempt_nb == attempt_nb_limit):
-            print("Still getting error 404 after " + str(attempt_nb-1) + " attempts, try again later.")
-            break
-    file_3.write(str(clan_data_3))
-    file_3.close()
+    # Check that the warlog of the clan is public
+    if "reason" in clan_data_3:
+        print("Error: " + clan_data_3["reason"])
+        print("The warlog of " + clan_name + " is not public, change the clan settings and try again.")
+        ready_check = input("Press Enter to continue...\n")
+    elif clan_data_3["state"] == "notInWar":
+        print("Error: " + clan_name + " is currently not warring or engaged in a CWL season, try again once the clan is a normal war.")
+        ready_check = input("Press Enter to continue...\n")
+    else:
+        file_3 = open(current_time + " - 03 - Current War ["+ clantag + "].txt","w", encoding="utf-8")
+        attempt_nb = 2
+        while str(clan_data_3) == "404":
+            print("Error 404, trying again in " + str(timer_1) + " seconds...")
+            sleep(timer_1)
+            print("Attempt #" + str(attempt_nb))
+            clan_data_3 = api.clan_current_war(str(clantag))
+            attempt_nb += 1
+            if (attempt_nb == attempt_nb_limit):
+                print("Still getting error 404 after " + str(attempt_nb-1) + " attempts, try again later.")
+                break
+        file_3.write(str(clan_data_1["name"]) + " (" + str(clan_data_1["tag"]) + " - lvl " + str(clan_data_1["clanLevel"]) + ")\n\n")
+        file_3.write("----------------------------------------\n\n")
+        file_3.write("WARNING: SOME OF THESE STATS AREN'T ACCURATE IF THE WAR CURRENTLY TAKING PLACE IS A CWL\n\n")
+        file_3.write("Opponent clan: " + str(clan_data_3["opponent"]["name"]) + " (" + str(clan_data_3["opponent"]["tag"]) + " - lvl " + str(clan_data_3["opponent"]["clanLevel"]) + ")\n")
+        file_3.write("War size: " + str(clan_data_3["teamSize"]) + "\n")
+        file_3.write("War state: " + str(clan_data_3["state"]) + "\n")
+        file_3.write("Preparation Time: " + str(clan_data_3["preparationStartTime"][0:4]) + "-" + str(clan_data_3["preparationStartTime"][4:6]) + "-" + str(clan_data_3["preparationStartTime"][6:8]) + "\n")
+        file_3.write("Start Time: " + str(clan_data_3["startTime"][0:4]) + "-" + str(clan_data_3["startTime"][4:6]) + "-" + str(clan_data_3["startTime"][6:8]) + "\n")
+        file_3.write("End Time: " + str(clan_data_3["endTime"][0:4]) + "-" + str(clan_data_3["endTime"][4:6]) + "-" + str(clan_data_3["endTime"][6:8]) + "\n")
+        file_3.write("Stars for: " + str(clan_data_3["clan"]["stars"]) + "/" + str(clan_data_3["teamSize"]*3) + " with " + str(clan_data_3["clan"]["destructionPercentage"]) + "% (done in " + str(clan_data_3["clan"]["attacks"]) + "/" + str(clan_data_3["teamSize"]*2) + " attacks)\n")
+        file_3.write("Stars against: " + str(clan_data_3["opponent"]["stars"]) + "/" + str(clan_data_3["teamSize"]*3) + " with " + str(clan_data_3["opponent"]["destructionPercentage"]) + "%\n\n")
+        file_3.write("----------------------------------------\n\n")
+        file_3_txt = "Individual stats for each members of " + clan_name + ":\n\n"
+        cw_member_count = 0
+        cw_members_list = []
+        while (cw_member_count < clan_data_3["teamSize"]):
+            cw_members_list.append(clan_data_3["clan"]["members"][cw_member_count])
+            cw_member_count += 1
+        cw_members_list = sorted(cw_members_list, key=lambda k: k["mapPosition"])
+        cw_member_count = 0
+        cw_av_th = 0
+        cw_attacks_counter = 0
+        cw_av_stars_done = 0
+        cw_av_per_done = 0
+        cw_defences_counter = 0
+        cw_av_stars_taken = 0
+        cw_av_per_taken = 0
+        while (cw_member_count < clan_data_3["teamSize"]):
+            cw_av_th += cw_members_list[cw_member_count]["townhallLevel"]
+            # The data is stored in file_3_txt first so it can be added in the .txt file after stats average
+            file_3_txt += str(cw_members_list[cw_member_count]["name"]) + " (" + str(cw_members_list[cw_member_count]["tag"]) + " - TH" + str(cw_members_list[cw_member_count]["townhallLevel"]) + ")\n"
+            file_3_txt += "War position: " + str(cw_members_list[cw_member_count]["mapPosition"]) + "\n"
+            file_3_txt += "Attack(s):\n"
+            if "attacks" not in cw_members_list[cw_member_count]:
+                file_3_txt += "The player didn't attack yet.\n"
+            elif len(cw_members_list[cw_member_count]["attacks"]) == 1:
+
+                cw_attacks_counter += 1
+                file_3_txt += "- " + str(cw_members_list[cw_member_count]["attacks"][0]["stars"]) + " stars done with " + str(cw_members_list[cw_member_count]["attacks"][0]["destructionPercentage"]) + "%\n"
+            else:
+                cw_av_stars_done += cw_members_list[cw_member_count]["attacks"][0]["stars"] + cw_members_list[cw_member_count]["attacks"][1]["stars"]
+                cw_av_per_done += cw_members_list[cw_member_count]["attacks"][0]["destructionPercentage"] + cw_members_list[cw_member_count]["attacks"][1]["destructionPercentage"]
+                cw_attacks_counter += 2
+                file_3_txt += "- " + str(cw_members_list[cw_member_count]["attacks"][0]["stars"]) + " stars done with " + str(cw_members_list[cw_member_count]["attacks"][0]["destructionPercentage"]) + "%\n"
+                file_3_txt += "- " + str(cw_members_list[cw_member_count]["attacks"][1]["stars"]) + " stars done with " + str(cw_members_list[cw_member_count]["attacks"][1]["destructionPercentage"]) + "%\n"
+            file_3_txt += "Defence(s):\n"
+            if cw_members_list[cw_member_count]["opponentAttacks"] == 0:
+                file_3_txt += "The player hasn't been attacked yet.\n"
+            else:
+                cw_av_stars_taken += cw_members_list[cw_member_count]["bestOpponentAttack"]["stars"]
+                cw_av_per_taken += cw_members_list[cw_member_count]["bestOpponentAttack"]["destructionPercentage"]
+                cw_defences_counter += 1
+                file_3_txt += "The player has been attacked " + str(cw_members_list[cw_member_count]["opponentAttacks"]) + " time(s)\n"
+                file_3_txt += "Best opponent attack: " + str(cw_members_list[cw_member_count]["bestOpponentAttack"]["stars"]) + " stars done with " + str(cw_members_list[cw_member_count]["bestOpponentAttack"]["destructionPercentage"]) + "%\n"
+            file_3_txt += "\n"
+            cw_member_count += 1
+        file_3.write("Average TH of the clan in the current clanwar: " + str(round(cw_av_th/clan_data_3["teamSize"], 2)) + "\n")
+        if clan_data_3["state"] == "preparation":
+            file_3.write(clan_name + " is currently in preparation phase, therefore there is no attack/defence stats yet.\n")
+            file_3.write("Please run the script again once some players did their attacks.\n\n")
+        else:
+            file_3.write("In average the members did " + str(round(cw_av_stars_done/cw_attacks_counter, 2)) + " stars and " + str(round(cw_av_per_done/cw_attacks_counter, 2)) + "% (all attacks are counted)\n")
+            file_3.write("In average the opponent clan did " + str(round(cw_av_stars_taken/cw_defences_counter, 2)) + " stars and " + str(round(cw_av_per_taken/cw_defences_counter, 2)) + "% (only best attacks are counted)\n\n")
+        file_3.write("----------------------------------------\n\n")
+        file_3.write(file_3_txt)
+        file_3.write("----------------------------------------\n\n")
+        file_3.write("Raw data (as downloaded from the API):\n")
+        file_3.write(str(clan_data_3))
+        file_3.close()
 else:
     print("The download of the data about current war has been skipped.")
 
@@ -193,11 +396,11 @@ if (proceed_cwl.lower() == "y"):
         if (attempt_nb == attempt_nb_limit):
             print("Still getting error 404 after " + str(attempt_nb-1) + " attempts, try again later.")
             break
-    if clan_data_4["reason"] == "notFound":
+    if "reason" in clan_data_4:
         print("\nError: " + clan_name + " is currently not in a CWL season.")
         print("These data are only available when " + clan_name + " is currently taking part to a CWL season.")
         print("Notice that after the end of a season these data stay available until the search for a new clanwar is launched.")
-        print("Once a new war is launched after a CWL season it is gone.\n")
+        print("Once a new war is launched after a CWL season, these data aren't available anymore.\n")
         ready_check = input("Press Enter to continue...\n")
     else:
         file_4 = open(current_time + " - 04 - CWL Groups ["+ clantag + "].txt","w", encoding="utf-8")
@@ -214,15 +417,15 @@ else:
 if (proceed_cwl_details.lower() == "y"):
 
     # Automatically write the wartags of the current CWL to Wartags.txt (only works during a CWL season)
-    # The script will only write the wartags that are already available (not equal to "#000000000")
+    # The script will only write the wartags that are already available (not equal to "#0")
     # If no CWL season is taking place, the script will skip this step but the user will need to prepare Wartags.txt manually
-    if clan_data_4 != 0 and clan_data_4["reason"] != "notFound":
+    if clan_data_4 != 0 and "reason" not in clan_data_4:
         file_war = open("Wartags.txt","w", encoding="utf-8")
         war_round_count = 0
         while (war_round_count < 7):
             war_count = 0
             while (war_count < 4):
-                if clan_data_4["rounds"][war_round_count]["warTags"][war_count] != "#000000000":
+                if clan_data_4["rounds"][war_round_count]["warTags"][war_count] != "#0":
                     file_war.write(clan_data_4["rounds"][war_round_count]["warTags"][war_count] + "\n")
                     war_count += 1
                 else:
@@ -326,11 +529,12 @@ if (proceed_cwl_details.lower() == "y"):
     war_total = len(data_war["cwlWars"])
 
     # Function that outputs the attack & defence stats (stars & percentage) of each members selected for the CWL season
+    # "_USED_TO_AVOID_NICKNAME_ERROR_" is used to avoid conflict in the JSON synthax (if a player has "'" in his nickname)
     def cwl_stats_output(clan_opponent):
         member_nb = 0
         dict_members = []
         while member_nb < members_total:
-            member_name = data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["name"]
+            member_name = data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["name"].replace("'", "_USED_TO_AVOID_NICKNAME_ERROR_")
             member_status = len(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb])
             if member_status == 7:
                 dict_members.append("{'Member': '" + member_name + "', 'stars_att': " + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["attacks"][0]["stars"]) + ", 'percent_att': '" + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["attacks"][0]["destructionPercentage"]) + "%', 'stars_def': " + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["bestOpponentAttack"]["stars"]) + ", 'percent_def': '" + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["bestOpponentAttack"]["destructionPercentage"]) + "%'}")
@@ -397,6 +601,15 @@ if (proceed_cwl_details.lower() == "y"):
         file_9.write("\n")
         member_nb += 1
     file_9.close()
+
+    # Get ride of "_USED_TO_AVOID_NICKNAME_ERROR_" (used to avoid conflict in the JSON synthax)
+    file_9 = open(current_time + " - 08 - CWL Members Stats ["+ clantag + "].txt","r", encoding="utf-8")
+    file_9_cleaner = file_9.read()
+    file_9.close()
+    file_9 = open(current_time + " - 08 - CWL Members Stats ["+ clantag + "].txt","w", encoding="utf-8")
+    file_9.write(file_9_cleaner.replace("_USED_TO_AVOID_NICKNAME_ERROR_", "'"))
+    file_9.close()
+
     # Sort the lines by alphabetic order (based on members name)
     file_9 = open(current_time + " - 08 - CWL Members Stats ["+ clantag + "].txt","r", encoding="utf-8")
     file_8_order_final = file_9.readlines()
@@ -449,23 +662,24 @@ print("Download finished (100%)")
 print("Raw data successfully written in:")
 if (proceed_clan.lower() == "y"):
     print(current_time + " - 01 - Clan Info ["+ clantag + "].txt")
-if (proceed_warlog.lower() == "y"):
+if (proceed_warlog.lower() == "y") and "reason" not in clan_data_2:
     print(current_time + " - 02 - Warlog ["+ clantag + "].txt")
-if (proceed_currentwar.lower() == "y"):
+if (proceed_currentwar.lower() == "y") and (("reason" not in clan_data_3) and (clan_data_3["state"] != "notInWar")):
     print(current_time + " - 03 - Current War ["+ clantag + "].txt")
 if os.path.exists(current_time + " - 04 - CWL Groups ["+ clantag + "].txt") == True:
         print(current_time + " - 04 - CWL Groups ["+ clantag + "].txt")
 if (proceed_cwl_details.lower() == "y"):
     print(current_time + " - 05 - CWL Wars ["+ clantag + "].txt")
     print(current_time + " - 06 - CWL Wars Dict ["+ clantag + "].txt")
-    print(current_time + " - 07 - CWL Members Stats Dict ["+ clantag + "].txt")
+    print(current_time + " - 07 - CWL Members Stats Dict ["+ clantag
+    + "].txt")
     print(current_time + " - 08 - CWL Members Stats ["+ clantag + "].txt")
 if (proceed_cwl_unique.lower() == "y"):
     print(current_time + " - 09 - Individual CWL War ["+ clantag + "].txt")
-if (proceed_clan.lower() != "y") and (proceed_warlog.lower() != "y") and (proceed_currentwar.lower() != "y") and  (os.path.exists(current_time + " - 04 - CWL Groups ["+ clantag + "].txt") != True) and (proceed_cwl_details.lower() != "y") and (proceed_cwl_unique.lower() != "y"):
+if (proceed_clan.lower() != "y") and ((proceed_warlog.lower() != "y") or "reason" in clan_data_2) and ((proceed_currentwar.lower() != "y") or "reason" in clan_data_3 or clan_data_3["state"] == "notInWar") and  (os.path.exists(current_time + " - 04 - CWL Groups ["+ clantag + "].txt") != True) and (proceed_cwl_details.lower() != "y") and (proceed_cwl_unique.lower() != "y"):
     print("No file has been written.")
 print("\n")
 print("Sakat's CoC Script " + script_version + " - Clan Valais (#9PJYL)")
 print("     Discover another project by us on:")
 print("     =======>  www.cgleech.tk <=======\n")
-finish = input("Press Enter to quit.\n")
+finish = input("Press Any Key to quit.\n")
