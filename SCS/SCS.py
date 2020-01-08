@@ -1,5 +1,5 @@
 """
-                         Sakat's CoC Script v0.8
+                         Sakat's CoC Script v0.9
                          -----------------------
 
 This script is based on ClashOfClansAPI (1.0.4) by Tony Benoy. For more info, please check his github on
@@ -20,7 +20,7 @@ from time import sleep
 from cocapi import CocApi
 
 # Current version of the Sakat's CoC Script
-script_version = "v0.8"
+script_version = "v0.9"
 
 # Clean terminal
 os.system("cls")
@@ -59,7 +59,7 @@ timeout = 10
 api=CocApi(token,timeout)
 
 # Set the clantag for which the script and check the information from the API
-clantag = ("#9PJYL")
+clantag = ("#L8P9UY")
 print("Default clantag is " + clantag)
 check_clantag = input("Do you want to enter another clantag? (y/n) \n")
 if (check_clantag.lower() == "y"):
@@ -78,7 +78,7 @@ attempt_nb_limit = 10
 attempt_nb_limit = attempt_nb_limit+1
 
 # Delay in seconds between two requests to the API (default is 0.2)
-timer_1 = 0.2
+timer_1 = 0.05
 
 # Clean the current screen
 print("\n"*100)
@@ -88,7 +88,7 @@ proceed_clan = input("(1/6) Do you want to download the clan and its members dat
 proceed_warlog = input("(2/6) Do you want to download the warlog of the clan? (y/n) \n")
 proceed_currentwar = input("(3/6) Do you want to download the data about current war ? (y/n) \n")
 proceed_cwl = input("(4/6) ** Only during a CWL season ** Do you want to download the data about current CWL group? (y/n) \n")
-proceed_cwl_details = input("(5/6) Do you want to download the details of individual CWL wars? (y/n) \n")
+proceed_cwl_details = input("(5/6) Do you want to download the details of individual CWL wars (with Wartags.txt)? (y/n) \n")
 proceed_cwl_unique = input("(6/6) Do you want to download the details of one single CWL war? (y/n) \n")
 
 # Get the clan and its members data from the API for global usage
@@ -135,8 +135,11 @@ if (proceed_clan.lower() == "y"):
     file_1.write("Required trophies: " + str(clan_data_1["requiredTrophies"]) + "\n")
     file_1.write("Clan points: \n - Home Village = " + str(clan_data_1["clanPoints"]) + "\n - Builder Base = " + str(clan_data_1["clanVersusPoints"]) + "\n")
     file_1.write("Wars won: " + str(clan_data_1["warWins"]) + "\n")
-    file_1.write("War ties: " + str(clan_data_1["warTies"]) + "\n")
-    file_1.write("Wars lost: " + str(clan_data_1["warLosses"]) + "\n")
+    if clan_data_1["isWarLogPublic"] == False:
+        file_1.write("Warlog not public" + "\n")
+    else:
+        file_1.write("War ties: " + str(clan_data_1["warTies"]) + "\n")
+        file_1.write("Wars lost: " + str(clan_data_1["warLosses"]) + "\n")
     file_1.write("Current war win-streak: " + str(clan_data_1["warWinStreak"]) + "\n\n")
     file_1.write("----------------------------------------\n\n")
     file_1_txt = "Members in details (by trophies order):\n\n"
@@ -290,7 +293,7 @@ if (proceed_currentwar.lower() == "y"):
         print("The warlog of " + clan_name + " is not public, change the clan settings and try again.")
         ready_check = input("Press Enter to continue...\n")
     elif clan_data_3["state"] == "notInWar":
-        print("Error: " + clan_name + " is currently not warring or engaged in a CWL season, try again once the clan is a normal war.")
+        print("Error: " + clan_name + " is currently not warring or is engaged in a CWL season, try again once the clan is a normal war.")
         ready_check = input("Press Enter to continue...\n")
     else:
         file_3 = open(current_time + " - 03 - Current War ["+ clantag + "].txt","w", encoding="utf-8")
