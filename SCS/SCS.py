@@ -1,5 +1,5 @@
 """
-                         Sakat's CoC Script v1.0
+                         Sakat's CoC Script v1.1
                          -----------------------
 
 This script is based on ClashOfClansAPI (1.0.4) by Tony Benoy. For more info, please check his github on
@@ -20,7 +20,7 @@ from time import sleep
 from cocapi import CocApi
 
 # Current version of the Sakat's CoC Script
-script_version = "v1.0"
+script_version = "v1.1"
 
 # Clean terminal
 os.system("cls")
@@ -130,7 +130,8 @@ if (proceed_clan.lower() == "y"):
     file_1.write("----------------------------------------\n\n")
     file_1.write('"' + str(clan_data_1["description"]) + '"\n\n')
     file_1.write("----------------------------------------\n\n")
-    file_1.write("Location: " + str(clan_data_1["location"]["name"]) + "\n")
+    if "location" in clan_data_1:
+        file_1.write("Location: " + str(clan_data_1["location"]["name"]) + "\n")
     file_1.write("War frequency: " + str(clan_data_1["warFrequency"]) + "\n")
     file_1.write("Required trophies: " + str(clan_data_1["requiredTrophies"]) + "\n")
     file_1.write("Clan points: \n - Home Village = " + str(clan_data_1["clanPoints"]) + "\n - Builder Base = " + str(clan_data_1["clanVersusPoints"]) + "\n")
@@ -265,13 +266,14 @@ if (proceed_warlog.lower() == "y"):
                 warlog_war_nb_clean += -1
             warlog_cw_count += 1
         file_2.write("Stats based on the " + str(warlog_war_nb_clean) +" last clanwars:\n")
-        file_2.write("Victory: " + str(warlog_cw_victory) + "/" + str(warlog_war_nb_clean) + " (" + str(round(warlog_cw_victory/warlog_war_nb_clean*100, 2)) + "% of victory)\n")
-        file_2.write("Average war size: " + str(round(warlog_av_size/warlog_war_nb_clean, 2)) + "\n")
-        file_2.write("Average opponent lvl: " + str(round(warlog_av_oppo_lvl/warlog_war_nb_clean, 2)) + "\n")
-        file_2.write("Average Stars for: " + str(round(warlog_av_stars_done/warlog_war_nb_clean*100, 2)) + "% (with " + str(round(warlog_av_per_done/warlog_war_nb_clean, 2)) + "% of destruction)\n")
-        file_2.write("Average Stars against: " + str(round(warlog_av_stars_taken/warlog_war_nb_clean*100, 2)) + "% (with " + str(round(warlog_av_per_taken/warlog_war_nb_clean, 2)) + "% of destruction)\n")
-        file_2.write("Average XP won: " + str(round(warlog_av_xp/warlog_war_nb_clean, 2)) + "\n\n")
-        file_2.write("----------------------------------------\n\n")
+        if warlog_war_nb_clean != 0:
+            file_2.write("Victory: " + str(warlog_cw_victory) + "/" + str(warlog_war_nb_clean) + " (" + str(round(warlog_cw_victory/warlog_war_nb_clean*100, 2)) + "% of victory)\n")
+            file_2.write("Average war size: " + str(round(warlog_av_size/warlog_war_nb_clean, 2)) + "\n")
+            file_2.write("Average opponent lvl: " + str(round(warlog_av_oppo_lvl/warlog_war_nb_clean, 2)) + "\n")
+            file_2.write("Average Stars for: " + str(round(warlog_av_stars_done/warlog_war_nb_clean*100, 2)) + "% (with " + str(round(warlog_av_per_done/warlog_war_nb_clean, 2)) + "% of destruction)\n")
+            file_2.write("Average Stars against: " + str(round(warlog_av_stars_taken/warlog_war_nb_clean*100, 2)) + "% (with " + str(round(warlog_av_per_taken/warlog_war_nb_clean, 2)) + "% of destruction)\n")
+            file_2.write("Average XP won: " + str(round(warlog_av_xp/warlog_war_nb_clean, 2)) + "\n\n")
+            file_2.write("----------------------------------------\n\n")
         file_2.write(file_2_txt)
         file_2.write("----------------------------------------\n\n")
         file_2.write(file_2_txt_2)
