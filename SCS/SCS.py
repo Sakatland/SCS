@@ -1,5 +1,5 @@
 """
-                         Sakat's CoC Script v1.1
+                         Sakat's CoC Script v1.2
                          -----------------------
 
 This script is based on ClashOfClansAPI (1.0.4) by Tony Benoy. For more info, please check his github on
@@ -20,7 +20,7 @@ from time import sleep
 from cocapi import CocApi
 
 # Current version of the Sakat's CoC Script
-script_version = "v1.1"
+script_version = "v1.2"
 
 # Clean terminal
 os.system("cls")
@@ -540,17 +540,18 @@ if (proceed_cwl_details.lower() == "y"):
         dict_members = []
         while member_nb < members_total:
             member_name = data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["name"].replace("'", "_USED_TO_AVOID_NICKNAME_ERROR_")
+            member_tag = data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["tag"]
             member_th_lvl = str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["townhallLevel"])
             member_status = len(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb])
             if member_status == 7:
-                dict_members.append("{'Member': '" + member_name + "', 'MemberTH': '" + member_th_lvl + "', 'stars_att': " + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["attacks"][0]["stars"]) + ", 'percent_att': '" + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["attacks"][0]["destructionPercentage"]) + "%', 'stars_def': " + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["bestOpponentAttack"]["stars"]) + ", 'percent_def': '" + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["bestOpponentAttack"]["destructionPercentage"]) + "%'}")
+                dict_members.append("{'Member': '" + member_name + "', 'MemberTag': '" + member_tag + "', 'MemberTH': '" + member_th_lvl + "', 'stars_att': " + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["attacks"][0]["stars"]) + ", 'percent_att': '" + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["attacks"][0]["destructionPercentage"]) + "%', 'stars_def': " + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["bestOpponentAttack"]["stars"]) + ", 'percent_def': '" + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["bestOpponentAttack"]["destructionPercentage"]) + "%'}")
             elif member_status == 6:
                 if data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["opponentAttacks"] >= 1:
-                    dict_members.append("{'Member': '" + member_name + "', 'MemberTH': '" + member_th_lvl + "', 'stars_att': '/', 'percent_att': '/', 'stars_def': " + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["bestOpponentAttack"]["stars"]) + ", 'percent_def': '" + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["bestOpponentAttack"]["destructionPercentage"]) + "%'}")
+                    dict_members.append("{'Member': '" + member_name + "', 'MemberTag': '" + member_tag + "', 'MemberTH': '" + member_th_lvl + "', 'stars_att': '/', 'percent_att': '/', 'stars_def': " + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["bestOpponentAttack"]["stars"]) + ", 'percent_def': '" + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["bestOpponentAttack"]["destructionPercentage"]) + "%'}")
                 else:
-                    dict_members.append("{'Member': '" + member_name + "', 'MemberTH': '" + member_th_lvl + "', 'stars_att': " + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["attacks"][0]["stars"]) + ", 'percent_att': '" + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["attacks"][0]["destructionPercentage"]) + "%', 'stars_def': '/', 'percent_def': '/'}")
+                    dict_members.append("{'Member': '" + member_name + "', 'MemberTag': '" + member_tag + "', 'MemberTH': '" + member_th_lvl + "', 'stars_att': " + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["attacks"][0]["stars"]) + ", 'percent_att': '" + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["attacks"][0]["destructionPercentage"]) + "%', 'stars_def': '/', 'percent_def': '/'}")
             else:
-                dict_members.append("{'Member': '" + member_name + "', 'MemberTH': '" + member_th_lvl + "', 'stars_att': '/', 'percent_att': '/', 'stars_def': '/', 'percent_def': '/'}")
+                dict_members.append("{'Member': '" + member_name + "', 'MemberTag': '" + member_tag + "', 'MemberTH': '" + member_th_lvl + "', 'stars_att': '/', 'percent_att': '/', 'stars_def': '/', 'percent_def': '/'}")
             member_nb += 1
         file_8.write("{'cwTag': '" + data_war["cwlWars"][war_nb]["cwTag"] + "', 'cwMembers': [" + ", ".join(dict_members))
 
@@ -600,7 +601,7 @@ if (proceed_cwl_details.lower() == "y"):
     member_nb = 0
     while member_nb < members_total:
         war_nb = 0
-        file_9.write(file_8_order["cwlStats"][war_nb]["cwMembers"][member_nb]["Member"] + "\t" + file_8_order["cwlStats"][war_nb]["cwMembers"][member_nb]["MemberTH"] + "\t")
+        file_9.write(file_8_order["cwlStats"][war_nb]["cwMembers"][member_nb]["Member"] + "\t" + file_8_order["cwlStats"][war_nb]["cwMembers"][member_nb]["MemberTag"] + "\t" + file_8_order["cwlStats"][war_nb]["cwMembers"][member_nb]["MemberTH"] + "\t")
         while war_nb < war_total/4:
             file_9.write(str(file_8_order["cwlStats"][war_nb]["cwMembers"][member_nb]["stars_att"]) + "\t" + str(file_8_order["cwlStats"][war_nb]["cwMembers"][member_nb]["percent_att"]) + "\t" + str(file_8_order["cwlStats"][war_nb]["cwMembers"][member_nb]["stars_def"]) + "\t" + str(file_8_order["cwlStats"][war_nb]["cwMembers"][member_nb]["percent_def"]) + "\t")
             war_nb += 1
@@ -622,7 +623,7 @@ if (proceed_cwl_details.lower() == "y"):
     file_9.write("Wartags available for the war to which " + clan_name + " takes part to:\n")
     file_9.write("\n".join(your_war_tags) + "\n\n\n")
     file_9.write("Individual stats of the participating members through the available CWL wars:\n")
-    file_9.write("Player \t TH LVL \t Stars Done \t % Done \t Stars Taken \t % Taken \t ...\n")
+    file_9.write("Player \t Playertag \t TH LVL \t Stars Done \t % Done \t Stars Taken \t % Taken \t ...\n")
     for item in file_8_order_final:
         file_9.write(item.replace("_USED_TO_AVOID_NICKNAME_ERROR_", "'"))
     file_9.close()
