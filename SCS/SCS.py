@@ -1,5 +1,5 @@
 """
-                         Sakat's CoC Script v1.2
+                         Sakat's CoC Script v1.3
                          -----------------------
 
 This script is based on ClashOfClansAPI (1.0.4) by Tony Benoy. For more info, please check his github on
@@ -20,7 +20,7 @@ from time import sleep
 from cocapi import CocApi
 
 # Current version of the Sakat's CoC Script
-script_version = "v1.2"
+script_version = "v1.3"
 
 # Clean terminal
 os.system("cls")
@@ -78,7 +78,7 @@ attempt_nb_limit = 10
 attempt_nb_limit = attempt_nb_limit+1
 
 # Delay in seconds between two requests to the API (default is 0.2)
-timer_1 = 0.05
+timer_1 = 0.02
 
 # Clean the current screen
 print("\n"*100)
@@ -384,9 +384,13 @@ else:
 # Get the information about the current CWL group saves it in the txt file
 # This function only works when a CWL is running and before a new CW is started after the end of a season
 # The data of a war are only available after its in preparation phase started
-# Clan_data_4 = 0 is required for the "if then" added later in the script (when the script automatically write the wartags of the current CWL to Wartags.txt),
-# so that, even if the step #4 is skipped (and no CWL is taking place), the step #5 still works (as long as there is a Warlogs.txt in the folder)
+# Clan_data_4 = 0 and members_total = 0 are  required for the "if then" added later in the script
+# (when the script automatically write the wartags of the current CWL to Wartags.txt),
+# so that, even if the step #4 is skipped (and no CWL is taking place), the step #5 still works
+# (as long as there is a Warlogs.txt in the folder)
 clan_data_4 = 0
+members_total = 0
+cwl_members_list = []
 if (proceed_cwl.lower() == "y"):
     print("Downloading the data about current CWL group (4/6)...")
     sleep(timer_1)
@@ -408,9 +412,20 @@ if (proceed_cwl.lower() == "y"):
         print("Once a new war is launched after a CWL season, these data aren't available anymore.\n")
         ready_check = input("Press Enter to continue...\n")
     else:
+        # Fix the "townHallLevel" (used in step 4) & "townhallLevel" (used globally) bug from the API
+        for clan in clan_data_4["clans"]:
+            for member in clan["members"]:
+                member["townhallLevel"] = member.pop("townHallLevel", None)
         file_4 = open(current_time + " - 04 - CWL Groups ["+ clantag + "].txt","w", encoding="utf-8")
         file_4.write(str(clan_data_4))
         file_4.close()
+        # Get the number of teams in the CWL group (not always 8)
+        clans_total = len(clan_data_4["clans"])
+        # Get the total number of players in the CWL roster of the clan and the list of players
+        for clan in clan_data_4["clans"]:
+          if clan["tag"] == clantag:
+            cwl_members_list = clan["members"]
+            members_total = len(cwl_members_list)
 else:
     print("The download of the data about current CWL group has been skipped.")
 
@@ -427,7 +442,7 @@ if (proceed_cwl_details.lower() == "y"):
     if clan_data_4 != 0 and "reason" not in clan_data_4:
         file_war = open("Wartags.txt","w", encoding="utf-8")
         war_round_count = 0
-        while (war_round_count < 7):
+        while (war_round_count < (clans_total-1)):
             war_count = 0
             while (war_count < 4):
                 if clan_data_4["rounds"][war_round_count]["warTags"][war_count] != "#0":
@@ -521,14 +536,31 @@ if (proceed_cwl_details.lower() == "y"):
     file_7.write(file_7_cleaner)
     file_7.close()
 
-    # Due to the limitation of the API, this part of the script isn't able to make the difference between:
-    #       A) A player not included in the clanwar
-    #       B) A player included in the clanwar BUT who doesn't attack AND isn't attacked (both in the same time)
-    # As this situation is very unlikely to happen, it is neglected in the current version of the program.
     data_war_import = open(current_time + " - 06 - CWL Wars Dict ["+ clantag + "].txt","r", encoding="utf-8")
     data_war = data_war_import.read()
     data_war_import.close()
     data_war = ast.literal_eval(data_war)
+
+    # If step #4 was skipped, gets list of members who participated to the CWL season and how many there are
+    # In this situation it is not possible to get the whole roster, only the member who were selected in at least one war
+    if members_total == 0:
+        for war in data_war["cwlWars"]:
+            if war["clan"]["tag"] == clantag:
+                for member in war["clan"]["members"]:
+                    cwl_members_list.append(member)
+            elif war["opponent"]["tag"] == clantag:
+                for member in war["opponent"]["members"]:
+                    cwl_members_list.append(member)
+
+        # Remove duplicate from cwl_members_list
+        cwl_members_list_temp = []
+        tag_aggr = []
+        for member in cwl_members_list:
+            if member.get("tag") not in tag_aggr:
+                tag_aggr.append(member.get("tag"))
+                cwl_members_list_temp.append(member)
+        cwl_members_list = cwl_members_list_temp
+        members_total = len(cwl_members_list)
 
     # Used to know how many wars are available
     war_total = len(data_war["cwlWars"])
@@ -538,11 +570,12 @@ if (proceed_cwl_details.lower() == "y"):
     def cwl_stats_output(clan_opponent):
         member_nb = 0
         dict_members = []
-        while member_nb < members_total:
+        while member_nb < 15:
             member_name = data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["name"].replace("'", "_USED_TO_AVOID_NICKNAME_ERROR_")
             member_tag = data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["tag"]
             member_th_lvl = str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["townhallLevel"])
             member_status = len(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb])
+            print(str(member_status) + "\n")
             if member_status == 7:
                 dict_members.append("{'Member': '" + member_name + "', 'MemberTag': '" + member_tag + "', 'MemberTH': '" + member_th_lvl + "', 'stars_att': " + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["attacks"][0]["stars"]) + ", 'percent_att': '" + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["attacks"][0]["destructionPercentage"]) + "%', 'stars_def': " + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["bestOpponentAttack"]["stars"]) + ", 'percent_def': '" + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["bestOpponentAttack"]["destructionPercentage"]) + "%'}")
             elif member_status == 6:
@@ -567,7 +600,6 @@ if (proceed_cwl_details.lower() == "y"):
         # The match-making randomly decides if a clan is the "host" or the "visitor" of the clanwar
         # This part of the script is used when the clan is considered as the host of the clan war
         if data_war["cwlWars"][war_nb]["clan"]["tag"] == clantag:
-            members_total = data_war["cwlWars"][war_nb]["teamSize"]
             your_opponent_names.append(data_war["cwlWars"][war_nb]["opponent"]["name"])
             your_opponent_tags.append(data_war["cwlWars"][war_nb]["opponent"]["tag"])
             your_war_tags.append(data_war["cwlWars"][war_nb]["cwTag"])
@@ -575,7 +607,6 @@ if (proceed_cwl_details.lower() == "y"):
             file_8.write("]}, ")
         # This part of the script is used when the clan is considered as the visitor of the clan war
         if data_war["cwlWars"][war_nb]["opponent"]["tag"] == clantag:
-            members_total = len(data_war["cwlWars"][war_nb]["opponent"]["members"])
             your_opponent_names.append(data_war["cwlWars"][war_nb]["clan"]["name"])
             your_opponent_tags.append(data_war["cwlWars"][war_nb]["clan"]["tag"])
             your_war_tags.append(data_war["cwlWars"][war_nb]["cwTag"])
@@ -598,15 +629,21 @@ if (proceed_cwl_details.lower() == "y"):
     file_8_order = file_8_cleaner.replace("/", "")
     file_8_order = ast.literal_eval(file_8_order)
     file_9 = open(current_time + " - 08 - CWL Members Stats ["+ clantag + "].txt","w", encoding="utf-8")
-    member_nb = 0
-    while member_nb < members_total:
-        war_nb = 0
-        file_9.write(file_8_order["cwlStats"][war_nb]["cwMembers"][member_nb]["Member"] + "\t" + file_8_order["cwlStats"][war_nb]["cwMembers"][member_nb]["MemberTag"] + "\t" + file_8_order["cwlStats"][war_nb]["cwMembers"][member_nb]["MemberTH"] + "\t")
-        while war_nb < war_total/4:
-            file_9.write(str(file_8_order["cwlStats"][war_nb]["cwMembers"][member_nb]["stars_att"]) + "\t" + str(file_8_order["cwlStats"][war_nb]["cwMembers"][member_nb]["percent_att"]) + "\t" + str(file_8_order["cwlStats"][war_nb]["cwMembers"][member_nb]["stars_def"]) + "\t" + str(file_8_order["cwlStats"][war_nb]["cwMembers"][member_nb]["percent_def"]) + "\t")
-            war_nb += 1
+
+    for member_output in cwl_members_list:
+        file_9.write(member_output["name"] + "\t" + member_output["tag"] + "\t" + str(member_output["townhallLevel"]) + "\t")
+        for war in file_8_order["cwlStats"]:
+            member_nb = 0
+            member_check = ""
+            while (member_nb < 15) and (member_check == ""):
+                if member_output["tag"] == war["cwMembers"][member_nb]["MemberTag"]:
+                    file_9.write(str(war["cwMembers"][member_nb]["stars_att"]) + "\t" + str(war["cwMembers"][member_nb]["percent_att"]) + "\t" + str(war["cwMembers"][member_nb]["stars_def"]) + "\t" + str(war["cwMembers"][member_nb]["percent_def"]) + "\t")
+                    member_check = "Found"
+                else:
+                    member_nb += 1
+            if member_check == "":
+                file_9.write("\t\t\t\t")
         file_9.write("\n")
-        member_nb += 1
     file_9.close()
 
     # Sort the lines by alphabetic order (based on members name)
@@ -614,6 +651,7 @@ if (proceed_cwl_details.lower() == "y"):
     file_8_order_final = file_9.readlines()
     file_8_order_final.sort(key=lambda x: x.lower())
     file_9.close()
+
     # Write the final "human-readable" .txt file
     file_9 = open(current_time + " - 08 - CWL Members Stats ["+ clantag + "].txt","w", encoding="utf-8")
     file_9.write("Names of opponent clans:\n")
