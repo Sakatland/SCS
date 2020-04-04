@@ -1,5 +1,5 @@
 """
-                         Sakat's CoC Script v1.3
+                         Sakat's CoC Script v1.3b
                          -----------------------
 
 This script is based on ClashOfClansAPI (1.0.4) by Tony Benoy. For more info, please check his github on
@@ -20,7 +20,7 @@ from time import sleep
 from cocapi import CocApi
 
 # Current version of the Sakat's CoC Script
-script_version = "v1.3"
+script_version = "v1.3b"
 
 # Clean terminal
 os.system("cls")
@@ -575,7 +575,6 @@ if (proceed_cwl_details.lower() == "y"):
             member_tag = data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["tag"]
             member_th_lvl = str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["townhallLevel"])
             member_status = len(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb])
-            print(str(member_status) + "\n")
             if member_status == 7:
                 dict_members.append("{'Member': '" + member_name + "', 'MemberTag': '" + member_tag + "', 'MemberTH': '" + member_th_lvl + "', 'stars_att': " + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["attacks"][0]["stars"]) + ", 'percent_att': '" + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["attacks"][0]["destructionPercentage"]) + "%', 'stars_def': " + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["bestOpponentAttack"]["stars"]) + ", 'percent_def': '" + str(data_war["cwlWars"][war_nb][clan_opponent]["members"][member_nb]["bestOpponentAttack"]["destructionPercentage"]) + "%'}")
             elif member_status == 6:
