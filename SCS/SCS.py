@@ -1,6 +1,6 @@
 """
-                         Sakat's CoC Script v1.3b
-                         -----------------------
+                         Sakat's CoC Script v1.4
+                         ------------------------
 
 This script is based on ClashOfClansAPI (1.0.4) by Tony Benoy. For more info, please check his github on
                         github.com/tonybenoy/cocapi/
@@ -20,7 +20,7 @@ from time import sleep
 from cocapi import CocApi
 
 # Current version of the Sakat's CoC Script
-script_version = "v1.3b"
+script_version = "v1.4"
 
 # Clean terminal
 os.system("cls")
@@ -59,7 +59,7 @@ timeout = 10
 api=CocApi(token,timeout)
 
 # Set the clantag for which the script and check the information from the API
-clantag = ("#L8P9UY")
+clantag = ("#2PJPVCGYU")
 print("Default clantag is " + clantag)
 check_clantag = input("Do you want to enter another clantag? (y/n) \n")
 if (check_clantag.lower() == "y"):
@@ -141,7 +141,8 @@ if (proceed_clan.lower() == "y"):
     else:
         file_1.write("War ties: " + str(clan_data_1["warTies"]) + "\n")
         file_1.write("Wars lost: " + str(clan_data_1["warLosses"]) + "\n")
-    file_1.write("Current war win-streak: " + str(clan_data_1["warWinStreak"]) + "\n\n")
+    file_1.write("Current war win-streak: " + str(clan_data_1["warWinStreak"]) + "\n")
+    file_1.write("CWL League: " + clan_data_1["warLeague"]["name"] + "\n\n")
     file_1.write("----------------------------------------\n\n")
     file_1_txt = "Members in details (by trophies order):\n\n"
     member_count = 0
