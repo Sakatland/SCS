@@ -1,5 +1,5 @@
 """
-                         Sakat's CoC Script v1.4
+                         Sakat's CoC Script v1.5
                          ------------------------
 
 This script is based on ClashOfClansAPI (1.0.4) by Tony Benoy. For more info, please check his github on
@@ -20,7 +20,7 @@ from time import sleep
 from cocapi import CocApi
 
 # Current version of the Sakat's CoC Script
-script_version = "v1.4"
+script_version = "v1.5"
 
 # Clean terminal
 os.system("cls")
@@ -346,7 +346,8 @@ if (proceed_currentwar.lower() == "y"):
             if "attacks" not in cw_members_list[cw_member_count]:
                 file_3_txt += "The player didn't attack yet.\n"
             elif len(cw_members_list[cw_member_count]["attacks"]) == 1:
-
+                cw_av_stars_done += cw_members_list[cw_member_count]["attacks"][0]["stars"]
+                cw_av_per_done += cw_members_list[cw_member_count]["attacks"][0]["destructionPercentage"]
                 cw_attacks_counter += 1
                 file_3_txt += "- " + str(cw_members_list[cw_member_count]["attacks"][0]["stars"]) + " stars done with " + str(cw_members_list[cw_member_count]["attacks"][0]["destructionPercentage"]) + "%\n"
             else:
