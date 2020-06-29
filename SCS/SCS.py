@@ -1,5 +1,5 @@
 """
-                         Sakat's CoC Script v1.5
+                         Sakat's CoC Script v1.6
                          ------------------------
 
 This script is based on ClashOfClansAPI (1.0.4) by Tony Benoy. For more info, please check his github on
@@ -20,7 +20,7 @@ from time import sleep
 from cocapi import CocApi
 
 # Current version of the Sakat's CoC Script
-script_version = "v1.5"
+script_version = "v1.6"
 
 # Clean terminal
 os.system("cls")
@@ -58,7 +58,7 @@ print("\n"*100)
 timeout = 10
 api=CocApi(token,timeout)
 
-# Set the clantag for which the script and check the information from the API
+# Set the clantag for which the script will check the information from the API
 clantag = ("#2PJPVCGYU")
 print("Default clantag is " + clantag)
 check_clantag = input("Do you want to enter another clantag? (y/n) \n")
@@ -372,8 +372,10 @@ if (proceed_currentwar.lower() == "y"):
             file_3.write(clan_name + " is currently in preparation phase, therefore there is no attack/defence stats yet.\n")
             file_3.write("Please run the script again once some players did their attacks.\n\n")
         else:
-            file_3.write("In average the members did " + str(round(cw_av_stars_done/cw_attacks_counter, 2)) + " stars and " + str(round(cw_av_per_done/cw_attacks_counter, 2)) + "% (all attacks are counted)\n")
-            file_3.write("In average the opponent clan did " + str(round(cw_av_stars_taken/cw_defences_counter, 2)) + " stars and " + str(round(cw_av_per_taken/cw_defences_counter, 2)) + "% (only best attacks are counted)\n\n")
+            if cw_attacks_counter != 0:
+                file_3.write("In average the members did " + str(round(cw_av_stars_done/cw_attacks_counter, 2)) + " stars and " + str(round(cw_av_per_done/cw_attacks_counter, 2)) + "% (all attacks are counted)\n")
+            if cw_defences_counter != 0:
+                file_3.write("In average the opponent clan did " + str(round(cw_av_stars_taken/cw_defences_counter, 2)) + " stars and " + str(round(cw_av_per_taken/cw_defences_counter, 2)) + "% (only best attacks are counted)\n\n")
         file_3.write("----------------------------------------\n\n")
         file_3.write(file_3_txt)
         file_3.write("----------------------------------------\n\n")
@@ -461,7 +463,7 @@ if (proceed_cwl_details.lower() == "y"):
 
     # Check that Wartags.txt exists in the folder.
     while os.path.exists("Wartags.txt") == False:
-        print("Error: warTags.txt hasn't been found.")
+        print("Error: Wartags.txt hasn't been found.")
         print("Please save the tags of the CWL wars in a txt file called 'Wartags.txt' (in the same folder as the script).")
         ready_check = input("When the file is ready, press Enter to proceed..\n")
         os.path.exists("Wartags.txt")
