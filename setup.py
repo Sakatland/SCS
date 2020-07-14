@@ -5,13 +5,13 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="scs",
-    version="0.6",
+    version="1.6",
     author="Sakat",
     description="A python script for Clash of Clans",
     long_description="A python script for Clash of Clans",
     long_description_content_type="text/markdown",
     url="https://github.com/Sakatland/SCS",
-    install_requires=["os", "datetime", "ast", "os.path", "time", "cocapi", "requests"], 
+    install_requires=["os", "datetime", "ast", "os.path", "time", "cocapi", "requests"],
     keywords='Clash of Clans SuperCell API COC',
     packages=setuptools.find_packages(),
     classifiers=(
