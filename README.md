@@ -32,6 +32,7 @@ If you want to download the data of a previous season you need to prepare "Warlo
 	#29QR90GVG
 
 You can also use SCS.ipynb in Google Colab or directly opening the following link:
+
 https://colab.research.google.com/drive/13kLQzi4YFqDocNDZypuvMAotJTHqT4vd
 
 
