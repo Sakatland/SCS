@@ -2,7 +2,7 @@
                          Sakat's CoC Script v1.6
                          ------------------------
 
-This script is based on ClashOfClansAPI (1.0.4) by Tony Benoy. For more info, please check his github on
+This script is based on ClashOfClansAPI (2.0.6) by Tony Benoy. For more info, please check his github on
                         github.com/tonybenoy/cocapi/
 If you don't have it already please install it with "pip3 install cocapi"
 
@@ -296,7 +296,7 @@ if (proceed_currentwar.lower() == "y"):
         print("The warlog of " + clan_name + " is not public, change the clan settings and try again.")
         ready_check = input("Press Enter to continue...\n")
     elif clan_data_3["state"] == "notInWar":
-        print("Error: " + clan_name + " is currently not warring or is engaged in a CWL season, try again once the clan is a normal war.")
+        print("Error: " + clan_name + " is currently not warring or is engaged in a CWL season, try again once the clan is in a normal war.")
         ready_check = input("Press Enter to continue...\n")
     else:
         file_3 = open(current_time + " - 03 - Current War ["+ clantag + "].txt","w", encoding="utf-8")
@@ -448,13 +448,16 @@ if (proceed_cwl_details.lower() == "y"):
         war_round_count = 0
         while (war_round_count < (clans_total-1)):
             war_count = 0
-            while (war_count < 4):
+            while (war_count < clans_total/2):
                 if clan_data_4["rounds"][war_round_count]["warTags"][war_count] != "#0":
                     file_war.write(clan_data_4["rounds"][war_round_count]["warTags"][war_count] + "\n")
                     war_count += 1
                 else:
-                    war_count = 4
-                    war_round_count = 6
+                    war_count = clans_total/2
+                    if clans_total == 8:
+                        war_round_count = 6
+                    if clans_total == 6:
+                        war_round_count = 4
             war_round_count += 1
         file_war.close()
     else:
