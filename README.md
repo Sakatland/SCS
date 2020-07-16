@@ -14,9 +14,7 @@ https://forum.supercell.com/showthread.php/1770241-CWL-Planning-Sheet-to-manage-
 
 # Note
 This script is based on ClashOfClansAPI (2.0.6) by Tony Benoy. For more info, please check his github on https://github.com/tonybenoy/cocapi. If you don't have it already please install it with:
-
-	pip3 install cocapi==2.0.6
-
+	pip3 install -r requirements.txt
 Get your Token for the API on https://developer.clashofclans.com
 
 
